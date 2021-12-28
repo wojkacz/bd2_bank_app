@@ -113,6 +113,7 @@ public class MainSceneController implements Initializable {
                     }
                 } catch(Exception e) {
                     System.out.println("[Create Account] " + e.getMessage());
+                    logout();
                 } finally {
                     request.releaseConnection();
                 }
@@ -196,6 +197,7 @@ public class MainSceneController implements Initializable {
             }
         } catch(Exception e) {
             System.out.println("[Get Accounts] " + e.getMessage());
+            logout();
         } finally {
             request.releaseConnection();
         }
@@ -208,6 +210,12 @@ public class MainSceneController implements Initializable {
     }
 
     @FXML
+    private void logoutButton(){
+        UserData.getUserData().setLogout(true);
+        logout();
+    }
+
+
     private void logout(){
         Parent root = null;
         try {

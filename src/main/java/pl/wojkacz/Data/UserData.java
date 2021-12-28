@@ -12,6 +12,8 @@ public class UserData {
     String token;
     List<Account> accounts = new ArrayList<>();
 
+    boolean logout = false;
+
     public UserData() {
     }
 
@@ -21,6 +23,14 @@ public class UserData {
         this.login = login;
         this.permission = permission;
         this.token = token;
+    }
+
+    public boolean isLogout() {
+        return logout;
+    }
+
+    public void setLogout(boolean logout) {
+        this.logout = logout;
     }
 
     public static UserData getUserData() {

@@ -1,5 +1,7 @@
 package pl.wojkacz.Login;
 
+
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -7,6 +9,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -37,6 +40,33 @@ public class LoginController implements Initializable {
 
     @FXML
     private Label connectionLabel;
+
+    @FXML
+    private AnchorPane errorPane;
+
+    @FXML
+    private Label e_errorLabel;
+
+    Runnable checkConnection = new Runnable() {
+        @Override
+        public void run() {
+            while (true) {
+                try {
+                    Thread.sleep(10 * 1000);
+                    if(checkConnection()) {
+                        Platform.runLater(new Runnable() {
+                            public void run() {
+                                setToConnected();
+                            }
+                        });
+                        break;
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    };
 
     // ======================================================================
     // Login
@@ -151,9 +181,10 @@ public class LoginController implements Initializable {
         String url = api + "login?" +
                 "login=" + login +
                 "&password=" + passwordHash;
-        HttpPost request = new HttpPost(url);
+        HttpPost request = null;
 
         try {
+            request = new HttpPost(url);
             HttpResponse response = httpClient.execute(request);
             HttpEntity entity = response.getEntity();
             String result = EntityUtils.toString(entity);
@@ -198,8 +229,10 @@ public class LoginController implements Initializable {
 
         } catch(Exception e) {
             System.out.println("[Login] " + e.getMessage());
+            setToNotConnected();
         } finally {
-            request.releaseConnection();
+            if(request != null)
+                request.releaseConnection();
         }
 
     }
@@ -228,8 +261,9 @@ public class LoginController implements Initializable {
                 "login=" + login +
                 "&code=" + code;
 
-        HttpPost request = new HttpPost(postUrl);
+        HttpPost request = null;
         try {
+            request = new HttpPost(postUrl);
             HttpResponse response = httpClient.execute(request);
             if(response.getStatusLine().getStatusCode() == 200){
                 togglePasswordResetingCodeVisibility();
@@ -248,7 +282,8 @@ public class LoginController implements Initializable {
             System.out.println("[Reset Password]" + e.getMessage());
             setToNotConnected();
         } finally {
-            request.releaseConnection();
+            if(request != null)
+                request.releaseConnection();
         }
     }
 
@@ -267,8 +302,9 @@ public class LoginController implements Initializable {
         String postUrl = api + "forgotPassword?" +
                 "login=" + login;
 
-        HttpPost request = new HttpPost(postUrl);
+        HttpPost request = null;
         try {
+            request = new HttpPost(postUrl);
             HttpResponse response = httpClient.execute(request);
             if(response.getStatusLine().getStatusCode() == 200){
                 togglePasswordResetingCodeVisibility();
@@ -286,7 +322,8 @@ public class LoginController implements Initializable {
             System.out.println("[Send Reset Code]" + e.getMessage());
             setToNotConnected();
         } finally {
-            request.releaseConnection();
+            if(request != null)
+                request.releaseConnection();
         }
     }
 
@@ -336,9 +373,10 @@ public class LoginController implements Initializable {
                 "&surname=" + surname +
                 "&login=" + login +
                 "&password=" + passwordHash;
-        HttpPost request = new HttpPost(url);
+        HttpPost request = null;
 
         try {
+            request = new HttpPost(url);
             HttpResponse response = httpClient.execute(request);
 
             switch(response.getStatusLine().getStatusCode()){
@@ -368,8 +406,14 @@ public class LoginController implements Initializable {
             System.out.println("[Register]" + e.getMessage());
             setToNotConnected();
         } finally {
-            request.releaseConnection();
+            if(request != null)
+                request.releaseConnection();
         }
+    }
+
+    @FXML
+    private void closeErrorPane(){
+        errorPane.setVisible(false);
     }
 
     @FXML
@@ -396,9 +440,10 @@ public class LoginController implements Initializable {
         String url = api + "activate?" +
                 "login=" + login +
                 "&code=" + code;
-        HttpPost request = new HttpPost(url);
+        HttpPost request = null;
 
         try {
+            request = new HttpPost(url);
             HttpResponse response = httpClient.execute(request);
 
             switch(response.getStatusLine().getStatusCode()){
@@ -431,13 +476,15 @@ public class LoginController implements Initializable {
             System.out.println("[Activate] " + e.getMessage());
             setToNotConnected();
         } finally {
-            request.releaseConnection();
+            if(request != null)
+                request.releaseConnection();
         }
 
     }
 
     @FXML
     private void toggleRegisterVisibility(){
+        errorPane.setVisible(false);
         loginPane.setVisible(!loginPane.isVisible());
         createAccountPane.setVisible(!createAccountPane.isVisible());
 
@@ -454,6 +501,7 @@ public class LoginController implements Initializable {
 
     @FXML
     private void togglePasswordResetingCodeVisibility(){
+        errorPane.setVisible(false);
         forgetCodePane.setVisible(!forgetCodePane.isVisible());
         forgetPane.setVisible(!forgetPane.isVisible());
 
@@ -467,6 +515,7 @@ public class LoginController implements Initializable {
 
     @FXML
     private void togglePasswordResetingVisibility(){
+        errorPane.setVisible(false);
         loginPane.setVisible(!loginPane.isVisible());
         forgetPane.setVisible(!forgetPane.isVisible());
 
@@ -480,6 +529,7 @@ public class LoginController implements Initializable {
 
     @FXML
     private void toggleActivationVisibility(){
+        errorPane.setVisible(false);
         loginPane.setVisible(!loginPane.isVisible());
         activatePane.setVisible(!activatePane.isVisible());
 
@@ -501,6 +551,24 @@ public class LoginController implements Initializable {
         return sb.toString();
     }
 
+    private boolean checkConnection(){
+        String getUrl = api + "connectionCheck";
+        HttpGet request = null;
+        boolean result;
+        try {
+            request = new HttpGet(getUrl);
+            httpClient.execute(request);
+            result = true;
+        } catch(Exception e) {
+            System.out.println("[Check Connection] " + e.getMessage());
+            result = false;
+        } finally {
+            if(request != null)
+                request.releaseConnection();
+        }
+        return result;
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         loginPane.setVisible(true);
@@ -508,11 +576,7 @@ public class LoginController implements Initializable {
         activatePane.setVisible(false);
         forgetPane.setVisible(false);
         forgetCodePane.setVisible(false);
-
-        if(UserData.getUserData() != null) {
-            l_loginTextField.setText(UserData.getUserData().getLogin());
-            UserData.setUserData(null);
-        }
+        errorPane.setVisible(false);
 
         try {
             md = MessageDigest.getInstance("MD5");
@@ -523,18 +587,18 @@ public class LoginController implements Initializable {
         assert md != null;
 
         httpClient = HttpClientBuilder.create().build();
-        String getUrl = api + "connectionCheck";
-        HttpGet request = new HttpGet(getUrl);
-
-        try {
-            httpClient.execute(request);
-            connectionLabel.setTextFill(Color.GREEN);
-            connectionLabel.setText("Connected");
-        } catch(Exception e) {
-            System.out.println("[Login] " + e.getMessage());
+        if(!checkConnection())
             setToNotConnected();
-        } finally {
-            request.releaseConnection();
+        else setToConnected();
+
+        if(UserData.getUserData() != null) {
+            l_loginTextField.setText(UserData.getUserData().getLogin());
+            if(!UserData.getUserData().isLogout()) {
+                e_errorLabel.setText("You have been logged out!");
+                errorPane.setVisible(true);
+            }
+            else UserData.getUserData().setLogout(false);
+            UserData.setUserData(null);
         }
     }
 
@@ -546,5 +610,20 @@ public class LoginController implements Initializable {
         a_activationButton.setDisable(true);
         f_sendCodeButton.setDisable(true);
         v_resetButton.setDisable(true);
+        e_errorLabel.setText("No connection! Wait for reconnect...");
+        errorPane.setVisible(true);
+        Thread thread = new Thread(checkConnection);
+        thread.start();
+    }
+
+    private void setToConnected(){
+        connectionLabel.setTextFill(Color.GREEN);
+        connectionLabel.setText("Connected");
+        l_loginButton.setDisable(false);
+        c_registerButton.setDisable(false);
+        a_activationButton.setDisable(false);
+        f_sendCodeButton.setDisable(false);
+        v_resetButton.setDisable(false);
+        errorPane.setVisible(false);
     }
 }
