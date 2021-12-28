@@ -6,13 +6,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Font;
 
 public class AccountTile extends AnchorPane {
-    String accName;
-    Long accID;
-    Double balancePLN;
-    Double balanceEUR;
-    Double balanceUSD;
-    Double balanceGBP;
-
+    Button manageButton;
     public AccountTile(String accName, Long accID, Double balancePLN, Double balanceEUR, Double balanceUSD, Double balanceGBP){
         this.setStyle("-fx-background-color: #e3e3e3");
         this.setPrefHeight(82);
@@ -48,9 +42,9 @@ public class AccountTile extends AnchorPane {
         Label gbpLabel = new Label();
         gbpLabel.setText("GBP " + balanceGBP);
         gbpLabel.setLayoutX(161);
-        gbpLabel.setLayoutY(57);
+        gbpLabel.setLayoutY(56);
 
-        Button manageButton = new Button();
+        manageButton = new Button();
         manageButton.setText("Manage");
         manageButton.setPrefHeight(72);
         manageButton.setPrefWidth(65);
@@ -67,5 +61,9 @@ public class AccountTile extends AnchorPane {
                 gbpLabel,
                 manageButton
         );
+    }
+
+    public Button getManageButton() {
+        return manageButton;
     }
 }

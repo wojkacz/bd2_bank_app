@@ -1,7 +1,5 @@
 package pl.wojkacz.Login;
 
-import javafx.application.Application;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -15,6 +13,7 @@ import javafx.stage.Stage;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
@@ -24,6 +23,7 @@ import pl.wojkacz.Data.UserData;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class LoginController implements Initializable {
@@ -34,6 +34,9 @@ public class LoginController implements Initializable {
 
     @FXML
     private Pane mainPane;
+
+    @FXML
+    private Label connectionLabel;
 
     // ======================================================================
     // Login
@@ -88,26 +91,56 @@ public class LoginController implements Initializable {
     @FXML
     private Label a_errorLabel;
 
+    @FXML
+    private Button a_activationButton;
+
     // ======================================================================
     // Forgot Password
+
+    @FXML
+    private Button f_sendCodeButton;
+
+    @FXML
+    private TextField f_loginTextField;
+
+    @FXML
+    private Label f_errorLabel;
+
+    @FXML
+    private AnchorPane forgetPane;
+
+    @FXML
+    private AnchorPane forgetCodePane;
+
+    @FXML
+    private Label v_errorLabel;
+
+    @FXML
+    private TextField v_loginTextField;
+
+    @FXML
+    private TextField v_codeTextField;
+
+    @FXML
+    private Button v_resetButton;
 
     // ======================================================================
 
     @FXML
-    private void loginButtonAction(ActionEvent event) {
+    private void loginButtonAction() {
         l_errorLabel.setVisible(false);
         l_errorLabel.setTextFill(Color.RED);
 
         String login = l_loginTextField.getText();
         String password = l_passwordTextField.getText();
 
-        if(login.length() <= 1) {
+        if(login == null || login.length() <= 1) {
             l_errorLabel.setText("Login must be longer than 1 character!");
             l_errorLabel.setVisible(true);
             return;
         }
 
-        if(password.length() <= 1) {
+        if(password == null || password.length() <= 1) {
             l_errorLabel.setText("Password must be longer than 1 character!");
             l_errorLabel.setVisible(true);
             return;
@@ -138,7 +171,7 @@ public class LoginController implements Initializable {
 
                     UserData.setUserData(new UserData(nameRes, surnameRes, loginRes, permissionRes, tokenRes));
 
-                    Parent root = FXMLLoader.load(getClass().getResource("../MainScene/MainScene.fxml"));
+                    Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("../MainScene/MainScene.fxml")));
                     Scene scene = new Scene(root);
                     scene.getStylesheets().add("/styles/Styles.css");
 
@@ -172,7 +205,93 @@ public class LoginController implements Initializable {
     }
 
     @FXML
-    private void registerButtonAction(ActionEvent event){
+    private void verifyCode(){
+        String login = v_loginTextField.getText();
+        String code = v_codeTextField.getText();
+        v_errorLabel.setText("");
+        v_errorLabel.setTextFill(Color.RED);
+
+        if(login == null || login.length() <= 1) {
+            v_errorLabel.setText("Email must be longer than 1 character!");
+            v_errorLabel.setVisible(true);
+            return;
+        }
+
+        if(code == null || code.length() <= 1) {
+            v_errorLabel.setText("Incorrect Code!");
+            v_errorLabel.setVisible(true);
+            return;
+        }
+
+        v_resetButton.setDisable(false);
+        String postUrl = api + "forgotPassword?" +
+                "login=" + login +
+                "&code=" + code;
+
+        HttpPost request = new HttpPost(postUrl);
+        try {
+            HttpResponse response = httpClient.execute(request);
+            if(response.getStatusLine().getStatusCode() == 200){
+                togglePasswordResetingCodeVisibility();
+                togglePasswordResetingVisibility();
+                l_errorLabel.setTextFill(Color.GREEN);
+                l_errorLabel.setText("Password changed! Check your email");
+                l_errorLabel.setVisible(true);
+                l_loginTextField.setText(login);
+            }
+            else {
+                v_errorLabel.setText("Incorrect email or code!");
+                v_errorLabel.setVisible(true);
+            }
+            v_resetButton.setDisable(false);
+        } catch(Exception e) {
+            System.out.println("[Reset Password]" + e.getMessage());
+            setToNotConnected();
+        } finally {
+            request.releaseConnection();
+        }
+    }
+
+    @FXML
+    private void sendVerifyCode(){
+        String login = f_loginTextField.getText();
+        f_errorLabel.setText("");
+
+        if(login == null || login.length() <= 1) {
+            f_errorLabel.setText("Email must be longer than 1 character!");
+            f_errorLabel.setVisible(true);
+            return;
+        }
+
+        f_sendCodeButton.setDisable(false);
+        String postUrl = api + "forgotPassword?" +
+                "login=" + login;
+
+        HttpPost request = new HttpPost(postUrl);
+        try {
+            HttpResponse response = httpClient.execute(request);
+            if(response.getStatusLine().getStatusCode() == 200){
+                togglePasswordResetingCodeVisibility();
+                v_loginTextField.setText(login);
+                v_errorLabel.setTextFill(Color.GREEN);
+                v_errorLabel.setText("Code sent! Check your email");
+                v_errorLabel.setVisible(true);
+            }
+            else {
+                f_errorLabel.setText("Incorrect email!");
+                f_errorLabel.setVisible(true);
+            }
+            f_sendCodeButton.setDisable(false);
+        } catch(Exception e) {
+            System.out.println("[Send Reset Code]" + e.getMessage());
+            setToNotConnected();
+        } finally {
+            request.releaseConnection();
+        }
+    }
+
+    @FXML
+    private void registerButtonAction(){
         c_errorLabel.setVisible(false);
         c_errorLabel.setTextFill(Color.RED);
         String name = c_nameTextField.getText();
@@ -180,19 +299,19 @@ public class LoginController implements Initializable {
         String login = c_loginTextField.getText();
         String password = c_passwordTextField.getText();
 
-        if(name.length() <= 1) {
+        if(name == null || name.length() <= 1) {
             c_errorLabel.setText("Name must be longer than 1 character!");
             c_errorLabel.setVisible(true);
             return;
         }
 
-        if(surname.length() <= 1) {
+        if(surname == null || surname.length() <= 1) {
             c_errorLabel.setText("Surname must be longer than 1 character!");
             c_errorLabel.setVisible(true);
             return;
         }
 
-        if(login.length() <= 1) {
+        if(login == null || login.length() <= 1) {
             c_errorLabel.setText("Email must be longer than 1 character!");
             c_errorLabel.setVisible(true);
             return;
@@ -204,7 +323,7 @@ public class LoginController implements Initializable {
             return;
         }
 
-        if(password.length() <= 1) {
+        if(password == null || password.length() <= 1) {
             c_errorLabel.setText("Password must be longer than 1 character!");
             c_errorLabel.setVisible(true);
             return;
@@ -232,11 +351,12 @@ public class LoginController implements Initializable {
                     c_errorLabel.setVisible(true);
                     break;
                 case 200:
-                    toggleRegisterVisibility(null);
-                    toggleActivationVisibility(null);
+                    toggleRegisterVisibility();
+                    toggleActivationVisibility();
                     a_errorLabel.setTextFill(Color.GREEN);
                     a_errorLabel.setText("Successfully registered! Check your email");
                     a_errorLabel.setVisible(true);
+                    a_loginTextField.setText(login);
                     break;
                 default:
                     c_errorLabel.setText("Unknown error!");
@@ -246,31 +366,33 @@ public class LoginController implements Initializable {
             c_registerButton.setDisable(false);
         } catch(Exception e) {
             System.out.println("[Register]" + e.getMessage());
+            setToNotConnected();
         } finally {
             request.releaseConnection();
         }
     }
 
     @FXML
-    private void activateButtonAction(ActionEvent event){
+    private void activateButtonAction(){
         a_errorLabel.setVisible(false);
         a_errorLabel.setTextFill(Color.RED);
 
         String login = a_loginTextField.getText();
         String code = a_codeTextField.getText();
 
-        if(login.length() <= 1) {
+        if(login == null || login.length() <= 1) {
             a_errorLabel.setText("Incorrect Email!");
             a_errorLabel.setVisible(true);
             return;
         }
 
-        if(code.length() != 4) {
+        if(code == null || code.length() != 4) {
             a_errorLabel.setText("Incorrect Code!");
             a_errorLabel.setVisible(true);
             return;
         }
 
+        a_activationButton.setDisable(true);
         String url = api + "activate?" +
                 "login=" + login +
                 "&code=" + code;
@@ -293,18 +415,21 @@ public class LoginController implements Initializable {
                     a_errorLabel.setVisible(true);
                     break;
                 case 200:
-                    toggleActivationVisibility(null);
+                    toggleActivationVisibility();
                     l_errorLabel.setTextFill(Color.GREEN);
                     l_errorLabel.setText("Successfully activated! You can log in");
                     l_errorLabel.setVisible(true);
+                    l_loginTextField.setText(login);
                     break;
                 default:
                     a_errorLabel.setText("Unknown error!");
                     a_errorLabel.setVisible(true);
                     break;
             }
+            a_activationButton.setDisable(false);
         } catch(Exception e) {
             System.out.println("[Activate] " + e.getMessage());
+            setToNotConnected();
         } finally {
             request.releaseConnection();
         }
@@ -312,7 +437,7 @@ public class LoginController implements Initializable {
     }
 
     @FXML
-    private void toggleRegisterVisibility(ActionEvent event){
+    private void toggleRegisterVisibility(){
         loginPane.setVisible(!loginPane.isVisible());
         createAccountPane.setVisible(!createAccountPane.isVisible());
 
@@ -328,7 +453,33 @@ public class LoginController implements Initializable {
     }
 
     @FXML
-    private void toggleActivationVisibility(ActionEvent event){
+    private void togglePasswordResetingCodeVisibility(){
+        forgetCodePane.setVisible(!forgetCodePane.isVisible());
+        forgetPane.setVisible(!forgetPane.isVisible());
+
+        f_errorLabel.setVisible(false);
+        f_loginTextField.setText("");
+
+        v_errorLabel.setVisible(false);
+        v_loginTextField.setText("");
+        v_codeTextField.setText("");
+    }
+
+    @FXML
+    private void togglePasswordResetingVisibility(){
+        loginPane.setVisible(!loginPane.isVisible());
+        forgetPane.setVisible(!forgetPane.isVisible());
+
+        f_errorLabel.setVisible(false);
+        f_loginTextField.setText("");
+
+        l_errorLabel.setVisible(false);
+        l_loginTextField.setText("");
+        l_passwordTextField.setText("");
+    }
+
+    @FXML
+    private void toggleActivationVisibility(){
         loginPane.setVisible(!loginPane.isVisible());
         activatePane.setVisible(!activatePane.isVisible());
 
@@ -355,14 +506,45 @@ public class LoginController implements Initializable {
         loginPane.setVisible(true);
         createAccountPane.setVisible(false);
         activatePane.setVisible(false);
+        forgetPane.setVisible(false);
+        forgetCodePane.setVisible(false);
+
+        if(UserData.getUserData() != null) {
+            l_loginTextField.setText(UserData.getUserData().getLogin());
+            UserData.setUserData(null);
+        }
 
         try {
             md = MessageDigest.getInstance("MD5");
         } catch (NoSuchAlgorithmException e) {
             System.out.println("[MessageDigest]" + e.getMessage());
+            setToNotConnected();
         }
         assert md != null;
 
         httpClient = HttpClientBuilder.create().build();
+        String getUrl = api + "connectionCheck";
+        HttpGet request = new HttpGet(getUrl);
+
+        try {
+            httpClient.execute(request);
+            connectionLabel.setTextFill(Color.GREEN);
+            connectionLabel.setText("Connected");
+        } catch(Exception e) {
+            System.out.println("[Login] " + e.getMessage());
+            setToNotConnected();
+        } finally {
+            request.releaseConnection();
+        }
+    }
+
+    private void setToNotConnected(){
+        connectionLabel.setTextFill(Color.RED);
+        connectionLabel.setText("Not Connected!");
+        l_loginButton.setDisable(true);
+        c_registerButton.setDisable(true);
+        a_activationButton.setDisable(true);
+        f_sendCodeButton.setDisable(true);
+        v_resetButton.setDisable(true);
     }
 }

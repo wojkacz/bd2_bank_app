@@ -28,6 +28,7 @@ import pl.wojkacz.Data.UserData;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class MainSceneController implements Initializable {
@@ -61,7 +62,14 @@ public class MainSceneController implements Initializable {
     private AnchorPane mainPane;
 
     @FXML
+    private AnchorPane settingsPane;
+
+    @FXML
     private void createAccount(){
+        for(Node n : accountsVBox.getChildren()){
+            AccountTile at = (AccountTile) n;
+            at.getManageButton().setDisable(!at.getManageButton().isDisabled());
+        }
         Label l = (Label) notificationPane.getChildren().get(1);
         l.setText("Are you sure you want to create account?\nThis action can not be undone!");
 
@@ -74,6 +82,10 @@ public class MainSceneController implements Initializable {
                 createAccButton.setDisable(false);
                 logoutButton.setDisable(false);
                 settingsButton.setDisable(false);
+                for(Node n : accountsVBox.getChildren()){
+                    AccountTile at = (AccountTile) n;
+                    at.getManageButton().setDisable(!at.getManageButton().isDisabled());
+                }
             }
         });
 
@@ -118,11 +130,26 @@ public class MainSceneController implements Initializable {
         settingsButton.setDisable(true);
     }
 
+    @FXML
+    private void toggleSettingsMenu(){
+        settingsPane.setVisible(!settingsPane.isVisible());
+        createAccButton.setDisable(!createAccButton.isDisabled());
+        logoutButton.setDisable(!logoutButton.isDisabled());
+        settingsButton.setDisable(!settingsButton.isDisabled());
+        for(Node n : accountsVBox.getChildren()){
+            AccountTile at = (AccountTile) n;
+            at.getManageButton().setDisable(!at.getManageButton().isDisabled());
+        }
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         userData = UserData.getUserData();
         welcomeLabel.setText("Hello, " + userData.getName() + " " + userData.getSurname() + "!");
         emailLabel.setText(userData.getLogin());
+
+        notificationPane.setVisible(false);
+        settingsPane.setVisible(false);
 
         refreshAccounts();
     }
@@ -182,14 +209,13 @@ public class MainSceneController implements Initializable {
 
     @FXML
     private void logout(){
-        UserData.setUserData(null);
-
         Parent root = null;
         try {
-            root = FXMLLoader.load(getClass().getResource("../Login/Login.fxml"));
+            root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("../Login/Login.fxml")));
         } catch (IOException e) {
             e.printStackTrace();
         }
+        assert root != null;
         Scene scene = new Scene(root);
         scene.getStylesheets().add("/styles/Styles.css");
 
