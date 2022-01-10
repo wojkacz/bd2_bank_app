@@ -20,6 +20,9 @@ public class Account {
         this.balanceUSD = balanceUSD;
     }
 
+    public static Account getCurrentAccount() { return AccountHolder.account; }
+    public static void setCurrentAccount(Account account) { AccountHolder.account = account; }
+
     public String getAccountName() {
         return accountName;
     }

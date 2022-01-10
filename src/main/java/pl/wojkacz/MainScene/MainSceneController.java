@@ -418,7 +418,7 @@ public class MainSceneController implements Initializable {
 
         for(Account acc : UserData.getUserData().getAccounts()){
             accountsVBox.getChildren().add(
-                    new AccountTile(acc.getAccountName(), acc.getAccountID(), acc.getBalancePLN(), acc.getBalanceEUR(), acc.getBalanceUSD(), acc.getBalanceGBP())
+                    new AccountTile(acc)
             );
         }
     }
