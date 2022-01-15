@@ -22,6 +22,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 import pl.wojkacz.Data.UserData;
+import pl.wojkacz.Main;
 
 import java.net.URL;
 import java.security.MessageDigest;
@@ -31,7 +32,6 @@ import java.util.ResourceBundle;
 
 public class LoginController implements Initializable {
 
-    final static String api = "http://localhost:8080/";
     HttpClient httpClient;
     MessageDigest md = null;
 
@@ -178,7 +178,7 @@ public class LoginController implements Initializable {
 
         l_loginButton.setDisable(true);
         String passwordHash = getHash(password);
-        String url = api + "login?" +
+        String url = Main.api + "login?" +
                 "login=" + login +
                 "&password=" + passwordHash;
         HttpPost request = null;
@@ -257,7 +257,7 @@ public class LoginController implements Initializable {
         }
 
         v_resetButton.setDisable(false);
-        String postUrl = api + "forgotPassword?" +
+        String postUrl = Main.api + "forgotPassword?" +
                 "login=" + login +
                 "&code=" + code;
 
@@ -299,7 +299,7 @@ public class LoginController implements Initializable {
         }
 
         f_sendCodeButton.setDisable(false);
-        String postUrl = api + "forgotPassword?" +
+        String postUrl = Main.api + "forgotPassword?" +
                 "login=" + login;
 
         HttpPost request = null;
@@ -368,7 +368,7 @@ public class LoginController implements Initializable {
 
         c_registerButton.setDisable(true);
         String passwordHash = getHash(password);
-        String url = api + "register?" +
+        String url = Main.api + "register?" +
                 "name=" + name +
                 "&surname=" + surname +
                 "&login=" + login +
@@ -437,7 +437,7 @@ public class LoginController implements Initializable {
         }
 
         a_activationButton.setDisable(true);
-        String url = api + "activate?" +
+        String url = Main.api + "activate?" +
                 "login=" + login +
                 "&code=" + code;
         HttpPost request = null;
@@ -552,7 +552,7 @@ public class LoginController implements Initializable {
     }
 
     private boolean checkConnection(){
-        String getUrl = api + "connectionCheck";
+        String getUrl = Main.api + "connectionCheck";
         HttpGet request = null;
         boolean result;
         try {

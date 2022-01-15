@@ -5,18 +5,21 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
-
 
 <AnchorPane fx:id="mainPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.wojkacz.AccountScene.AccountSceneController">
    <children>
-      <ScrollPane layoutX="400.0" layoutY="33.0" prefHeight="326.0" prefWidth="186.0" />
+      <ScrollPane layoutX="400.0" layoutY="33.0" prefHeight="326.0" prefWidth="186.0">
+         <content>
+            <VBox fx:id="transfersVBox" prefHeight="322.0" prefWidth="184.0" spacing="5.0" />
+         </content></ScrollPane>
       <Label layoutX="400.0" layoutY="2.0" text="Transfers">
          <font>
             <Font name="System Bold" size="24.0" />
          </font>
       </Label>
-      <Button layoutX="400.0" layoutY="361.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="186.0" text="See transfer" />
+      <Button fx:id="seeTransferButton" layoutX="400.0" layoutY="361.0" mnemonicParsing="false" onAction="#toggleSeeTransferPaneVisibility" prefHeight="35.0" prefWidth="186.0" text="See transfer" />
       <Label fx:id="nameLabel" layoutX="6.0" layoutY="2.0" text="Account Name">
          <font>
             <Font name="System Bold" size="24.0" />
@@ -81,8 +84,79 @@
             </Label>
          </children>
       </Pane>
-      <Button layoutX="271.0" layoutY="325.0" mnemonicParsing="false" prefHeight="71.0" prefWidth="123.0" text="New Transfer" />
-      <Button layoutX="139.0" layoutY="325.0" mnemonicParsing="false" prefHeight="71.0" prefWidth="123.0" text="Exchange Money" />
-      <Button layoutX="6.0" layoutY="326.0" mnemonicParsing="false" onAction="#returnToUserView" prefHeight="71.0" prefWidth="123.0" text="Return to User View" />
+      <Button fx:id="newTransferButton" layoutX="271.0" layoutY="325.0" mnemonicParsing="false" onAction="#toggleNewTransferPaneVisibility" prefHeight="71.0" prefWidth="123.0" text="New Transfer" />
+      <Button fx:id="exchangeButton" layoutX="139.0" layoutY="325.0" mnemonicParsing="false" onAction="#toggleExchangePaneVisibility" prefHeight="71.0" prefWidth="123.0" text="Exchange Money" />
+      <Button fx:id="returnButton" layoutX="6.0" layoutY="326.0" mnemonicParsing="false" onAction="#returnToUserView" prefHeight="71.0" prefWidth="123.0" text="Return to User View" />
+      <Button fx:id="refreshButton" layoutX="271.0" layoutY="31.0" mnemonicParsing="false" onAction="#refreshAccountButton" prefHeight="133.0" prefWidth="123.0" text="Refresh" />
+      <AnchorPane fx:id="exchangePane" layoutX="72.0" layoutY="54.0" prefHeight="293.0" prefWidth="457.0" style="-fx-background-color: #ffffff; -fx-border-color: #000000;" visible="false">
+         <children>
+            <Button layoutX="14.0" layoutY="232.0" mnemonicParsing="false" onAction="#toggleExchangePaneVisibility" prefHeight="47.0" prefWidth="104.0" text="Exit" />
+         </children>
+      </AnchorPane>
+      <AnchorPane fx:id="newTransferPane" layoutX="72.0" layoutY="54.0" prefHeight="293.0" prefWidth="457.0" style="-fx-background-color: #ffffff; -fx-border-color: #000000;" visible="false">
+         <children>
+            <Button layoutX="14.0" layoutY="232.0" mnemonicParsing="false" onAction="#toggleNewTransferPaneVisibility" prefHeight="47.0" prefWidth="104.0" text="Exit" />
+         </children>
+      </AnchorPane>
+      <AnchorPane fx:id="seeTransferPane" layoutX="72.0" layoutY="54.0" prefHeight="197.0" prefWidth="457.0" style="-fx-background-color: #ffffff; -fx-border-color: #000000;" visible="false">
+         <children>
+            <Label layoutX="14.0" layoutY="6.0" text="Transfer Details">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+            <Button layoutX="14.0" layoutY="140.0" mnemonicParsing="false" onAction="#toggleSeeTransferPaneVisibility" prefHeight="47.0" prefWidth="429.0" text="Exit" />
+            <Label layoutX="14.0" layoutY="33.0" text="Sender Account ID:">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Label>
+            <Label layoutX="14.0" layoutY="53.0" text="Receiver Account ID:">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Label>
+            <Label layoutX="14.0" layoutY="73.0" text="Currency:">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Label>
+            <Label layoutX="14.0" layoutY="93.0" text="Amount:">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Label>
+            <Label layoutX="14.0" layoutY="113.0" text="Date:">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Label>
+            <Label fx:id="senderIdLabel" layoutX="146.0" layoutY="33.0" text="0">
+               <font>
+                  <Font name="System Italic" size="14.0" />
+               </font>
+            </Label>
+            <Label fx:id="receiverIdLabel" layoutX="156.0" layoutY="53.0" text="0">
+               <font>
+                  <Font name="System Italic" size="14.0" />
+               </font>
+            </Label>
+            <Label fx:id="currencyNameLabel" layoutX="83.0" layoutY="73.0" text="USD">
+               <font>
+                  <Font name="System Italic" size="14.0" />
+               </font>
+            </Label>
+            <Label fx:id="amountLabel" layoutX="77.0" layoutY="93.0" text="300">
+               <font>
+                  <Font name="System Italic" size="14.0" />
+               </font>
+            </Label>
+            <Label fx:id="dateLabel" layoutX="54.0" layoutY="113.0" text="21.01.2022">
+               <font>
+                  <Font name="System Italic" size="14.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
    </children>
 </AnchorPane>

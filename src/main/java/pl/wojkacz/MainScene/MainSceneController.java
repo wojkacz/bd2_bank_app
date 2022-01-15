@@ -24,6 +24,7 @@ import org.json.JSONObject;
 import pl.wojkacz.CustomObjects.AccountTile;
 import pl.wojkacz.Data.Account;
 import pl.wojkacz.Data.UserData;
+import pl.wojkacz.Main;
 
 import java.io.IOException;
 import java.net.URL;
@@ -35,7 +36,6 @@ import java.util.ResourceBundle;
 
 public class MainSceneController implements Initializable {
 
-    final static String api = "http://localhost:8080/";
     HttpClient httpClient;
     MessageDigest md;
 
@@ -128,53 +128,50 @@ public class MainSceneController implements Initializable {
         Button cancelButton = (Button) notificationPane.getChildren().get(2);
         Button submitButton = (Button) notificationPane.getChildren().get(3);
 
-        cancelButton.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent event) {
-                notificationPane.setVisible(false);
-                createAccButton.setDisable(false);
-                logoutButton.setDisable(false);
-                settingsButton.setDisable(false);
-                for(Node n : accountsVBox.getChildren()){
-                    AccountTile at = (AccountTile) n;
-                    at.getManageButton().setDisable(!at.getManageButton().isDisabled());
-                }
+        cancelButton.setOnAction(event -> {
+            notificationPane.setVisible(false);
+            createAccButton.setDisable(false);
+            logoutButton.setDisable(false);
+            settingsButton.setDisable(false);
+            for(Node n : accountsVBox.getChildren()){
+                AccountTile at = (AccountTile) n;
+                at.getManageButton().setDisable(!at.getManageButton().isDisabled());
             }
         });
 
-        submitButton.setOnAction(new EventHandler<ActionEvent>() {
-            public void handle(ActionEvent event) {
-                String postUrl = api + "createAccount?" +
-                        "tokenStr=" + UserData.getUserData().getToken();
-                HttpPost request = new HttpPost(postUrl);
+        submitButton.setOnAction(event -> {
+            HttpClient httpClient = HttpClientBuilder.create().build();
+            String postUrl = Main.api + "createAccount?" +
+                    "tokenStr=" + UserData.getUserData().getToken();
+            HttpPost request = new HttpPost(postUrl);
 
-                try {
-                    HttpResponse response = httpClient.execute(request);
-                    switch(response.getStatusLine().getStatusCode()){
-                        case 417:
-                            logout();
-                            break;
-                        case 401:
-                            // Admin nie moze
-                            break;
-                        case 200:
-                            refreshAccounts();
-                            break;
-                        default:
-                            // Nieznany blad
-                            break;
-                    }
-                } catch(Exception e) {
-                    System.out.println("[Create Account] " + e.getMessage());
-                    logout();
-                } finally {
-                    request.releaseConnection();
+            try {
+                HttpResponse response = httpClient.execute(request);
+                switch(response.getStatusLine().getStatusCode()){
+                    case 417:
+                        logout();
+                        break;
+                    case 401:
+                        // Admin nie moze
+                        break;
+                    case 200:
+                        refreshAccounts();
+                        break;
+                    default:
+                        // Nieznany blad
+                        break;
                 }
-
-                notificationPane.setVisible(false);
-                createAccButton.setDisable(false);
-                logoutButton.setDisable(false);
-                settingsButton.setDisable(false);
+            } catch(Exception e) {
+                System.out.println("[Create Account] " + e.getMessage());
+                logout();
+            } finally {
+                request.releaseConnection();
             }
+
+            notificationPane.setVisible(false);
+            createAccButton.setDisable(false);
+            logoutButton.setDisable(false);
+            settingsButton.setDisable(false);
         });
 
         notificationPane.setVisible(true);
@@ -205,7 +202,7 @@ public class MainSceneController implements Initializable {
         }
 
         httpClient = HttpClientBuilder.create().build();
-        String getUrl = api + "updateUser?" +
+        String getUrl = Main.api + "updateUser?" +
                 "tokenStr=" + UserData.getUserData().getToken() +
                 "&password_hash=" + getHash(set_passwordTextField.getText());
 
@@ -353,6 +350,11 @@ public class MainSceneController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        /*if(UserData.getUserData().isLogout()) {
+            UserData.getUserData().setLogout(false);
+            logout();
+        }*/
+
         welcomeLabel.setText("Hello, " + UserData.getUserData().getName() + " " + UserData.getUserData().getSurname() + "!");
         emailLabel.setText(UserData.getUserData().getLogin());
 
@@ -371,50 +373,8 @@ public class MainSceneController implements Initializable {
 
     public void refreshAccounts(){
         accountsVBox.getChildren().clear();
-        UserData.getUserData().getAccounts().clear();
-
-        httpClient = HttpClientBuilder.create().build();
-        String getUrl = api + "getAccounts?" +
-                "tokenStr=" + UserData.getUserData().getToken();
-        HttpGet request = new HttpGet(getUrl);
-
-        try {
-            HttpResponse response = httpClient.execute(request);
-            HttpEntity entity = response.getEntity();
-            String result = EntityUtils.toString(entity);
-
-            switch(response.getStatusLine().getStatusCode()){
-                case 417:
-                    logout();
-                    break;
-                case 404:
-                    // Nie znaleziono kont
-                    break;
-                case 200:
-                    // Znaleziono konta
-                    List<Account> accs = UserData.getUserData().getAccounts();
-                    JSONObject obj = new JSONObject(result);
-                    int amount = obj.getJSONObject("data").getInt("amount");
-                    for(int i = 1; i <= amount; i++){
-                        String accName = "Account " + i;
-                        Long accID = obj.getJSONObject("account_" + i).getLong("account_id");
-                        Double balPLN = obj.getJSONObject("account_" + i).getDouble("balance_pln");
-                        Double balEUR = obj.getJSONObject("account_" + i).getDouble("balance_euro");
-                        Double balGBP = obj.getJSONObject("account_" + i).getDouble("balance_pound");
-                        Double balUSD = obj.getJSONObject("account_" + i).getDouble("balance_usd");
-                        accs.add(new Account(accName, accID, balPLN, balEUR, balGBP, balUSD));
-                    }
-                    break;
-                default:
-                    // Nieznany blad
-                    break;
-            }
-        } catch(Exception e) {
-            System.out.println("[Get Accounts] " + e.getMessage());
+        if(!UserData.refreshAccountsData())
             logout();
-        } finally {
-            request.releaseConnection();
-        }
 
         for(Account acc : UserData.getUserData().getAccounts()){
             accountsVBox.getChildren().add(
