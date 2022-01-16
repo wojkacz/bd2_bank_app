@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
@@ -88,24 +91,91 @@
       <Button fx:id="exchangeButton" layoutX="139.0" layoutY="325.0" mnemonicParsing="false" onAction="#toggleExchangePaneVisibility" prefHeight="71.0" prefWidth="123.0" text="Exchange Money" />
       <Button fx:id="returnButton" layoutX="6.0" layoutY="326.0" mnemonicParsing="false" onAction="#returnToUserView" prefHeight="71.0" prefWidth="123.0" text="Return to User View" />
       <Button fx:id="refreshButton" layoutX="271.0" layoutY="31.0" mnemonicParsing="false" onAction="#refreshAccountButton" prefHeight="133.0" prefWidth="123.0" text="Refresh" />
-      <AnchorPane fx:id="exchangePane" layoutX="72.0" layoutY="54.0" prefHeight="293.0" prefWidth="457.0" style="-fx-background-color: #ffffff; -fx-border-color: #000000;" visible="false">
+      <AnchorPane fx:id="exchangePane" layoutX="72.0" layoutY="54.0" prefHeight="206.0" prefWidth="495.0" style="-fx-background-color: #ffffff; -fx-border-color: #000000;">
          <children>
-            <Button layoutX="14.0" layoutY="232.0" mnemonicParsing="false" onAction="#toggleExchangePaneVisibility" prefHeight="47.0" prefWidth="104.0" text="Exit" />
+            <ChoiceBox fx:id="fromChoiceBox" layoutX="13.0" layoutY="50.0" prefHeight="25.0" prefWidth="137.0" />
+            <ChoiceBox fx:id="toChoiceBox" layoutX="200.0" layoutY="50.0" prefHeight="25.0" prefWidth="137.0" />
+            <Label layoutX="163.0" layoutY="49.0" text="-- &gt;">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+            <TextField fx:id="e_amountTextField" layoutX="13.0" layoutY="85.0" onAction="#setChanges" prefHeight="25.0" prefWidth="137.0" />
+            <TextField fx:id="e_exchangeAmountTextField" layoutX="200.0" layoutY="85.0" prefHeight="25.0" prefWidth="137.0" />
+            <Button layoutX="14.0" layoutY="147.0" mnemonicParsing="false" onAction="#toggleExchangePaneVisibility" prefHeight="47.0" prefWidth="161.0" text="Exit" />
+            <Label fx:id="e_errorLabel" layoutX="14.0" layoutY="117.0" text="ERROR" textFill="RED">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Label>
+            <Label layoutX="14.0" layoutY="14.0" text="Currency Exchange">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+            <Separator layoutX="14.0" layoutY="40.0" prefHeight="3.0" prefWidth="467.0" />
+            <Separator layoutX="345.0" layoutY="4.0" orientation="VERTICAL" prefHeight="197.0" prefWidth="8.0" />
+            <Label layoutX="353.0" layoutY="13.0" text="Exchange Rate">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+            <Label layoutX="349.0" layoutY="42.0" text="Currency" />
+            <Label layoutX="409.0" layoutY="42.0" text="Buy   |   Sell" />
+            <Label layoutX="356.0" layoutY="59.0" text="USD" />
+            <Label layoutX="357.0" layoutY="77.0" text="GBP" />
+            <Label layoutX="357.0" layoutY="95.0" text="EUR" />
+            <Button layoutX="180.0" layoutY="147.0" mnemonicParsing="false" onAction="#toggleExchangePaneVisibility" prefHeight="47.0" prefWidth="161.0" text="Exchange" />
+            <Button layoutX="353.0" layoutY="147.0" mnemonicParsing="false" onAction="#refreshExchangeRate" prefHeight="47.0" prefWidth="133.0" text="Refresh" />
+            <Label fx:id="usdPrice" layoutX="400.0" layoutY="59.0" text="0.0000 | 0.0000" textAlignment="RIGHT" />
+            <Label fx:id="gbpPrice" layoutX="400.0" layoutY="77.0" text="0.0000 | 0.0000" textAlignment="RIGHT" />
+            <Label fx:id="eurPrice" layoutX="400.0" layoutY="95.0" text="0.0000 | 0.0000" textAlignment="RIGHT" />
+            <Button layoutX="155.0" layoutY="85.0" mnemonicParsing="false" onAction="#setChanges" prefHeight="25.0" prefWidth="41.0" text="Set" />
          </children>
       </AnchorPane>
-      <AnchorPane fx:id="newTransferPane" layoutX="72.0" layoutY="54.0" prefHeight="293.0" prefWidth="457.0" style="-fx-background-color: #ffffff; -fx-border-color: #000000;" visible="false">
+      <AnchorPane fx:id="newTransferPane" layoutX="130.0" layoutY="91.0" prefHeight="220.0" prefWidth="283.0" style="-fx-background-color: #ffffff; -fx-border-color: #000000;" visible="false">
          <children>
-            <Button layoutX="14.0" layoutY="232.0" mnemonicParsing="false" onAction="#toggleNewTransferPaneVisibility" prefHeight="47.0" prefWidth="104.0" text="Exit" />
+            <TextField fx:id="receiverTextField" layoutX="14.0" layoutY="61.0" />
+            <TextField fx:id="amountTextField" layoutX="14.0" layoutY="114.0" />
+            <ChoiceBox fx:id="currencyChoiceBox" layoutX="174.0" layoutY="114.0" prefHeight="25.0" prefWidth="83.0" />
+            <Button fx:id="exitButton" layoutX="10.0" layoutY="163.0" mnemonicParsing="false" onAction="#toggleNewTransferPaneVisibility" prefHeight="47.0" prefWidth="123.0" text="Exit" />
+            <Button fx:id="sendButton" layoutX="149.0" layoutY="163.0" mnemonicParsing="false" onAction="#sendTransfer" prefHeight="47.0" prefWidth="123.0" text="Send" />
+            <Label layoutX="14.0" layoutY="41.0" text="Receiver Account ID">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Label>
+            <Label layoutX="14.0" layoutY="6.0" text="New Transfer">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+            <Label layoutX="14.0" layoutY="94.0" text="Amount">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Label>
+            <Label layoutX="174.0" layoutY="94.0" text="Currency">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Label>
+            <Label fx:id="n_errorLabel" layoutX="11.0" layoutY="142.0" prefHeight="20.0" prefWidth="261.0" text="ERROR LABEL" textFill="RED" visible="false">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Label>
+            <Separator layoutX="8.0" layoutY="25.0" prefHeight="20.0" prefWidth="261.0" />
          </children>
       </AnchorPane>
-      <AnchorPane fx:id="seeTransferPane" layoutX="72.0" layoutY="54.0" prefHeight="197.0" prefWidth="457.0" style="-fx-background-color: #ffffff; -fx-border-color: #000000;" visible="false">
+      <AnchorPane fx:id="seeTransferPane" layoutX="142.0" layoutY="70.0" prefHeight="197.0" prefWidth="316.0" style="-fx-background-color: #ffffff; -fx-border-color: #000000;" visible="false">
          <children>
             <Label layoutX="14.0" layoutY="6.0" text="Transfer Details">
                <font>
                   <Font name="System Bold" size="18.0" />
                </font>
             </Label>
-            <Button layoutX="14.0" layoutY="140.0" mnemonicParsing="false" onAction="#toggleSeeTransferPaneVisibility" prefHeight="47.0" prefWidth="429.0" text="Exit" />
+            <Button layoutX="14.0" layoutY="140.0" mnemonicParsing="false" onAction="#toggleSeeTransferPaneVisibility" prefHeight="47.0" prefWidth="291.0" text="Exit" />
             <Label layoutX="14.0" layoutY="33.0" text="Sender Account ID:">
                <font>
                   <Font name="System Bold" size="14.0" />
@@ -154,6 +224,70 @@
             <Label fx:id="dateLabel" layoutX="54.0" layoutY="113.0" text="21.01.2022">
                <font>
                   <Font name="System Italic" size="14.0" />
+               </font>
+            </Label>
+            <Separator layoutX="10.0" layoutY="28.0" prefHeight="10.0" prefWidth="291.0" />
+         </children>
+      </AnchorPane>
+      <Separator layoutX="6.0" layoutY="50.0" prefHeight="1.0" prefWidth="261.0" />
+      <AnchorPane fx:id="confirmTransferPane" layoutX="129.0" layoutY="91.0" prefHeight="220.0" prefWidth="316.0" style="-fx-background-color: #ffffff; -fx-border-color: #000000;" visible="false">
+         <children>
+            <Button layoutX="14.0" layoutY="159.0" mnemonicParsing="false" onAction="#toggleConfirmationPaneVisibility" prefHeight="47.0" prefWidth="133.0" text="Cancel" />
+            <Label layoutX="14.0" layoutY="14.0" text="New Transfer Confirmation">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+            <Separator layoutX="14.0" layoutY="40.0" prefHeight="3.0" prefWidth="291.0" />
+            <Label layoutX="14.0" layoutY="41.0" text="Are you sure you want to send this transfer?">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <Label layoutX="14.0" layoutY="57.0" text="This action can not be undone!">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <Label layoutX="14.0" layoutY="77.0" text="To:">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Label>
+            <Label layoutX="14.0" layoutY="95.0" text="Amount:">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Label>
+            <Label layoutX="14.0" layoutY="114.0" text="Currency:">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Label>
+            <Label layoutX="14.0" layoutY="134.0" text="Approximately:">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Label>
+            <Button layoutX="162.0" layoutY="159.0" mnemonicParsing="false" onAction="#acceptTransfer" prefHeight="47.0" prefWidth="137.0" text="Submit" />
+            <Label fx:id="c_toLabel" layoutX="36.0" layoutY="77.0" text="TEXT">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <Label fx:id="c_amountLabel" layoutX="74.0" layoutY="95.0" text="TEXT">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <Label fx:id="c_currencyLabel" layoutX="81.0" layoutY="114.0" text="TEXT">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <Label fx:id="c_approximatelyLabel" layoutX="119.0" layoutY="134.0" text="TEXT">
+               <font>
+                  <Font size="14.0" />
                </font>
             </Label>
          </children>

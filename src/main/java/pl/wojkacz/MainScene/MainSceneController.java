@@ -27,10 +27,14 @@ import pl.wojkacz.Data.UserData;
 import pl.wojkacz.Main;
 
 import java.io.IOException;
+import java.math.RoundingMode;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.ResourceBundle;
 

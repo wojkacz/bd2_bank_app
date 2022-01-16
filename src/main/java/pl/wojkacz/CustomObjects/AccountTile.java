@@ -13,11 +13,17 @@ import javafx.stage.Stage;
 import pl.wojkacz.Data.Account;
 
 import java.io.IOException;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 import java.util.Objects;
 
 public class AccountTile extends AnchorPane {
     Button manageButton;
+    private static final DecimalFormat df = new DecimalFormat("0.00", new DecimalFormatSymbols(Locale.ENGLISH));
     public AccountTile(final Account acc){
+        df.setRoundingMode(RoundingMode.DOWN);
         this.setStyle("-fx-background-color: #e3e3e3");
         this.setPrefHeight(82);
         this.setPrefWidth(446);
@@ -35,22 +41,22 @@ public class AccountTile extends AnchorPane {
         idLabel.setLayoutY(39);
 
         Label plnLabel = new Label();
-        plnLabel.setText("PLN " + acc.getBalancePLN());
+        plnLabel.setText("PLN " + df.format(acc.getBalancePLN()));
         plnLabel.setLayoutX(161);
         plnLabel.setLayoutY(5);
 
         Label usdLabel = new Label();
-        usdLabel.setText("USD " + acc.getBalanceUSD());
+        usdLabel.setText("USD " + df.format(acc.getBalanceUSD()));
         usdLabel.setLayoutX(161);
         usdLabel.setLayoutY(22);
 
         Label eurLabel = new Label();
-        eurLabel.setText("EUR " + acc.getBalanceEUR());
+        eurLabel.setText("EUR " + df.format(acc.getBalanceEUR()));
         eurLabel.setLayoutX(161);
         eurLabel.setLayoutY(39);
 
         Label gbpLabel = new Label();
-        gbpLabel.setText("GBP " + acc.getBalanceGBP());
+        gbpLabel.setText("GBP " + df.format(acc.getBalanceGBP()));
         gbpLabel.setLayoutX(161);
         gbpLabel.setLayoutY(56);
 
