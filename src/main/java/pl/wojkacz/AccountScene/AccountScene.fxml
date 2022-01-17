@@ -91,7 +91,7 @@
       <Button fx:id="exchangeButton" layoutX="139.0" layoutY="325.0" mnemonicParsing="false" onAction="#toggleExchangePaneVisibility" prefHeight="71.0" prefWidth="123.0" text="Exchange Money" />
       <Button fx:id="returnButton" layoutX="6.0" layoutY="326.0" mnemonicParsing="false" onAction="#returnToUserView" prefHeight="71.0" prefWidth="123.0" text="Return to User View" />
       <Button fx:id="refreshButton" layoutX="271.0" layoutY="31.0" mnemonicParsing="false" onAction="#refreshAccountButton" prefHeight="133.0" prefWidth="123.0" text="Refresh" />
-      <AnchorPane fx:id="exchangePane" layoutX="72.0" layoutY="54.0" prefHeight="206.0" prefWidth="495.0" style="-fx-background-color: #ffffff; -fx-border-color: #000000;">
+      <AnchorPane fx:id="exchangePane" layoutX="72.0" layoutY="54.0" prefHeight="206.0" prefWidth="495.0" style="-fx-background-color: #ffffff; -fx-border-color: #000000;" visible="false">
          <children>
             <ChoiceBox fx:id="fromChoiceBox" layoutX="13.0" layoutY="50.0" prefHeight="25.0" prefWidth="137.0" />
             <ChoiceBox fx:id="toChoiceBox" layoutX="200.0" layoutY="50.0" prefHeight="25.0" prefWidth="137.0" />
@@ -125,7 +125,7 @@
             <Label layoutX="356.0" layoutY="59.0" text="USD" />
             <Label layoutX="357.0" layoutY="77.0" text="GBP" />
             <Label layoutX="357.0" layoutY="95.0" text="EUR" />
-            <Button layoutX="180.0" layoutY="147.0" mnemonicParsing="false" onAction="#toggleExchangePaneVisibility" prefHeight="47.0" prefWidth="161.0" text="Exchange" />
+            <Button layoutX="180.0" layoutY="147.0" mnemonicParsing="false" onAction="#exchangeCurrency" prefHeight="47.0" prefWidth="161.0" text="Exchange" />
             <Button layoutX="353.0" layoutY="147.0" mnemonicParsing="false" onAction="#refreshExchangeRate" prefHeight="47.0" prefWidth="133.0" text="Refresh" />
             <Label fx:id="usdPrice" layoutX="400.0" layoutY="59.0" text="0.0000 | 0.0000" textAlignment="RIGHT" />
             <Label fx:id="gbpPrice" layoutX="400.0" layoutY="77.0" text="0.0000 | 0.0000" textAlignment="RIGHT" />

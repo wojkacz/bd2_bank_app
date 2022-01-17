@@ -345,11 +345,52 @@ public class AccountSceneController implements Initializable {
     private void exchangeCurrency(){
         if(setChanges(null)){
 
-            // TODO wymiana waluty
+            HttpClient httpClient = HttpClientBuilder.create().build();
+            String postUrl = Main.api + "exchangeCurrency" +
+                    "?tokenStr=" + UserData.getUserData().getToken() +
+                    "&accountID=" + Account.getCurrentAccount().getAccountID() +
+                    "&amount=" + df.format(Double.parseDouble(e_amountTextField.getText())) +
+                    "&currencyFromName=" + fromChoiceBox.getValue() +
+                    "&currencyToName=" + toChoiceBox.getValue();
+            System.out.println(postUrl);
+            HttpPost request = new HttpPost(postUrl);
 
-            e_errorLabel.setTextFill(Color.GREEN);
-            e_errorLabel.setText("Currency exchanged successfully!");
-            e_errorLabel.setVisible(true);
+            try {
+                HttpResponse response = httpClient.execute(request);
+                switch (response.getStatusLine().getStatusCode()){
+                    case 200:
+                        e_amountTextField.setText("");
+                        e_errorLabel.setTextFill(Color.GREEN);
+                        e_errorLabel.setText("Currency exchanged successfully!");
+                        e_errorLabel.setVisible(true);
+                        break;
+                    case 405: // brak srodkow
+                        e_errorLabel.setText("Insufficient balance on your account!");
+                        e_errorLabel.setVisible(true);
+                        break;
+                    case 406:
+                        e_errorLabel.setText("Value must be at lest 0.01!");
+                        e_errorLabel.setVisible(true);
+                        break;
+                    case 417:
+                        request.releaseConnection();
+                        logout();
+                        return;
+                    default:
+                        e_errorLabel.setText("Unknown error!");
+                        e_errorLabel.setVisible(true);
+                        break;
+                }
+            } catch (Exception e) {
+                System.out.println("[Exchange] " + e.getMessage());
+                request.releaseConnection();
+                logout();
+                return;
+            } finally {
+                request.releaseConnection();
+            }
+
+            refreshAccountButton();
         }
     }
 
@@ -450,9 +491,6 @@ public class AccountSceneController implements Initializable {
 
     @FXML
     private void acceptTransfer(){
-        DecimalFormatSymbols otherSymbols = new DecimalFormatSymbols(Locale.getDefault());
-        otherSymbols.setDecimalSeparator('.');
-
         HttpClient httpClient = HttpClientBuilder.create().build();
         String postUrl = Main.api + "sendTransfer" +
                 "?tokenStr=" + UserData.getUserData().getToken() +
@@ -597,6 +635,7 @@ public class AccountSceneController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         df.setRoundingMode(RoundingMode.DOWN);
+        df2.setRoundingMode(RoundingMode.DOWN);
         refreshAccount();
         seeTransferPane.setVisible(false);
         newTransferPane.setVisible(false);
