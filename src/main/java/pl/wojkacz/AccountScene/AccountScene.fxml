@@ -5,6 +5,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
@@ -85,6 +86,43 @@
                   <Font name="System Bold" size="18.0" />
                </font>
             </Label>
+            <Label fx:id="ydhalLabel" layoutX="2.0" layoutY="19.0" text="You don't have loan!" visible="false">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <Button fx:id="takeLoanButton" layoutX="265.0" layoutY="11.0" mnemonicParsing="false" onAction="#toggleTakeLoanPane" prefHeight="133.0" prefWidth="114.0" text="Take Loan" visible="false" />
+            <Label fx:id="loanAmountLabel" layoutX="2.0" layoutY="29.0" text="Amount: ">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <Label fx:id="loanTotalLabel" layoutX="2.0" layoutY="130.0" text="Total to Pay Back: ">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <Label fx:id="loanLengthLabel" layoutX="2.0" layoutY="49.0" text="Length: ">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <Label fx:id="loanPaidInstLabel" layoutX="3.0" layoutY="69.0" text="Paid Installements:">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <Label fx:id="loanInstLabel" layoutX="3.0" layoutY="89.0" text="Installement: ">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <Label fx:id="loanDateLabel" layoutX="3.0" layoutY="109.0" text="Date:">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <Button fx:id="payInstallementButton" layoutX="265.0" layoutY="13.0" mnemonicParsing="false" onAction="#payInstallement" prefHeight="133.0" prefWidth="114.0" text="Pay Installement" />
          </children>
       </Pane>
       <Button fx:id="newTransferButton" layoutX="271.0" layoutY="325.0" mnemonicParsing="false" onAction="#toggleNewTransferPaneVisibility" prefHeight="71.0" prefWidth="123.0" text="New Transfer" />
@@ -288,6 +326,40 @@
             <Label fx:id="c_approximatelyLabel" layoutX="119.0" layoutY="134.0" text="TEXT">
                <font>
                   <Font size="14.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
+      <AnchorPane fx:id="takeLoanPane" layoutX="129.0" layoutY="70.0" prefHeight="197.0" prefWidth="316.0" style="-fx-background-color: #ffffff; -fx-border-color: #000000;" visible="false">
+         <children>
+            <Label layoutX="14.0" layoutY="6.0" text="Take Loan">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+            <Button layoutX="14.0" layoutY="140.0" mnemonicParsing="false" onAction="#toggleTakeLoanPane" prefHeight="47.0" prefWidth="137.0" text="Exit" />
+            <Separator layoutX="10.0" layoutY="28.0" prefHeight="10.0" prefWidth="291.0" />
+            <Button fx:id="tl_takeLoanButton" layoutX="170.0" layoutY="140.0" mnemonicParsing="false" onAction="#submitTakingLoan" prefHeight="47.0" prefWidth="137.0" text="Submit" />
+            <TextField fx:id="tl_amountTextField" layoutX="8.0" layoutY="52.0" prefHeight="25.0" prefWidth="291.0" />
+            <Label layoutX="10.0" layoutY="34.0" text="Amount">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Label layoutX="10.0" layoutY="82.0" text="Length">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Slider fx:id="lengthSlider" blockIncrement="1.0" layoutX="8.0" layoutY="99.0" majorTickUnit="1.0" max="24.0" min="1.0" minorTickCount="1" prefHeight="14.0" prefWidth="149.0" snapToTicks="true" value="1.0" />
+            <Label fx:id="sliderLabel" layoutX="158.0" layoutY="97.0" text="1">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Label fx:id="tl_errorLabel" layoutX="14.0" layoutY="123.0" prefHeight="17.0" prefWidth="291.0" text="1" textFill="RED" visible="false">
+               <font>
+                  <Font name="System Bold" size="12.0" />
                </font>
             </Label>
          </children>

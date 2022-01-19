@@ -12,6 +12,8 @@ public class Transfer implements Serializable {
     Double amount;
     LocalDate date;
 
+    Long pendingID;
+
     public Transfer(String name, Long senderAccountID, Long receiverAccountID, Long currencyID, Double amount, LocalDate date) {
         this.name = name;
         this.senderAccountID = senderAccountID;
@@ -22,6 +24,14 @@ public class Transfer implements Serializable {
     }
 
     public Transfer() {
+    }
+
+    public Long getPendingID() {
+        return pendingID;
+    }
+
+    public void setPendingID(Long pendingID) {
+        this.pendingID = pendingID;
     }
 
     public int getIndex() {

@@ -1,5 +1,7 @@
 package pl.wojkacz.AccountScene;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -23,6 +25,7 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 import pl.wojkacz.CustomObjects.TransferTile;
 import pl.wojkacz.Data.Account;
+import pl.wojkacz.Data.Loan;
 import pl.wojkacz.Data.Transfer;
 import pl.wojkacz.Data.UserData;
 import pl.wojkacz.Main;
@@ -44,6 +47,7 @@ public class AccountSceneController implements Initializable {
     Long accountID = null;
     Double amount = null;
     String currencySelectedText = null;
+    boolean transferEmpty = true;
     // **********************************************************************
     // Main page
 
@@ -85,6 +89,33 @@ public class AccountSceneController implements Initializable {
 
     @FXML
     private VBox transfersVBox;
+
+    @FXML
+    private Label ydhalLabel;
+
+    @FXML
+    private Button takeLoanButton;
+
+    @FXML
+    private Label loanAmountLabel;
+
+    @FXML
+    private Label loanLengthLabel;
+
+    @FXML
+    private Label loanPaidInstLabel;
+
+    @FXML
+    private Label loanInstLabel;
+
+    @FXML
+    private Label loanDateLabel;
+
+    @FXML
+    private Label loanTotalLabel;
+
+    @FXML
+    private Button payInstallementButton;
 
     // **********************************************************************
     // Exchange page
@@ -181,6 +212,27 @@ public class AccountSceneController implements Initializable {
     private Label c_approximatelyLabel;
 
     // **********************************************************************
+    // Take Loan Pane
+
+    @FXML
+    private AnchorPane takeLoanPane;
+
+    @FXML
+    private Label sliderLabel;
+
+    @FXML
+    private Slider lengthSlider;
+
+    @FXML
+    private TextField tl_amountTextField;
+
+    @FXML
+    private Label tl_errorLabel;
+
+    @FXML
+    private Button tl_takeLoanButton;
+
+    // **********************************************************************
 
     @FXML
     private void returnToUserView(){
@@ -204,8 +256,13 @@ public class AccountSceneController implements Initializable {
         returnButton.setDisable(!returnButton.isDisable());
         newTransferButton.setDisable(!newTransferButton.isDisable());
         exchangeButton.setDisable(!exchangeButton.isDisable());
-        seeTransferButton.setDisable(!seeTransferButton.isDisable());
+
+        if(transferEmpty) seeTransferButton.setDisable(true);
+        else seeTransferButton.setDisable(!seeTransferButton.isDisable());
+
         refreshButton.setDisable(!refreshButton.isDisable());
+        payInstallementButton.setDisable(!payInstallementButton.isDisable());
+        takeLoanButton.setDisable(!takeLoanButton.isDisable());
     }
 
     @FXML
@@ -369,7 +426,7 @@ public class AccountSceneController implements Initializable {
                         e_errorLabel.setVisible(true);
                         break;
                     case 406:
-                        e_errorLabel.setText("Value must be at lest 0.01!");
+                        e_errorLabel.setText("Value must be at least 0.01!");
                         e_errorLabel.setVisible(true);
                         break;
                     case 417:
@@ -512,7 +569,6 @@ public class AccountSceneController implements Initializable {
                     n_errorLabel.setTextFill(Color.GREEN);
                     n_errorLabel.setText("Transfer sent!");
                     n_errorLabel.setVisible(true);
-                    refreshAccountButton();
                     break;
                 case 202:
                     receiverTextField.setText("");
@@ -521,7 +577,6 @@ public class AccountSceneController implements Initializable {
                     n_errorLabel.setTextFill(Color.GREEN);
                     n_errorLabel.setText("Transfer added to pending list!");
                     n_errorLabel.setVisible(true);
-                    refreshAccountButton();
                     break;
                 case 400:
                     n_errorLabel.setText("[Internal] Currency not found!");
@@ -557,6 +612,8 @@ public class AccountSceneController implements Initializable {
             request.releaseConnection();
         }
         toggleConfirmationPaneVisibility();
+        refreshAccountButton();
+        seeTransferButton.setDisable(true);
     }
 
     @FXML
@@ -615,12 +672,47 @@ public class AccountSceneController implements Initializable {
             logout();
         }
 
+        if(Account.getLoanInfo() == 2) {
+            logout();
+        }
+
         nameLabel.setText(Account.getCurrentAccount().getAccountName());
         idLabel.setText("ID: " + Account.getCurrentAccount().getAccountID());
         balancePLN.setText(df.format(Account.getCurrentAccount().getBalancePLN()));
         balanceEUR.setText(df.format(Account.getCurrentAccount().getBalanceEUR()));
         balanceGBP.setText(df.format(Account.getCurrentAccount().getBalanceGBP()));
         balanceUSD.setText(df.format(Account.getCurrentAccount().getBalanceUSD()));
+
+        if(Account.getCurrentAccount().getLoan() == null) {
+            ydhalLabel.setVisible(true);
+            takeLoanButton.setVisible(true);
+
+            loanAmountLabel.setVisible(false);
+            loanLengthLabel.setVisible(false);
+            loanPaidInstLabel.setVisible(false);
+            loanInstLabel.setVisible(false);
+            loanDateLabel.setVisible(false);
+            loanTotalLabel.setVisible(false);
+            payInstallementButton.setVisible(false);
+        } else {
+            ydhalLabel.setVisible(false);
+            takeLoanButton.setVisible(false);
+
+            loanAmountLabel.setText("Amount: " + df.format(Account.getCurrentAccount().getLoan().getAmount()));
+            loanLengthLabel.setText("Length: " + Account.getCurrentAccount().getLoan().getLength() + " months");
+            loanPaidInstLabel.setText("Paid Installements: " + Account.getCurrentAccount().getLoan().getPaidInstallements());
+            loanInstLabel.setText("Installement: " + df.format(Account.getCurrentAccount().getLoan().getInstallement()) + " PLN");
+            loanDateLabel.setText("Date: " + Account.getCurrentAccount().getLoan().getDate());
+            loanTotalLabel.setText("Total to Pay Back: " + df.format(Account.getCurrentAccount().getLoan().getToPayBackTotal()) + " PLN");
+
+            loanAmountLabel.setVisible(true);
+            loanLengthLabel.setVisible(true);
+            loanPaidInstLabel.setVisible(true);
+            loanInstLabel.setVisible(true);
+            loanDateLabel.setVisible(true);
+            loanTotalLabel.setVisible(true);
+            payInstallementButton.setVisible(true);
+        }
 
         int i = 0;
         for(Transfer t : Account.getCurrentAccount().getTransfers()) {
@@ -630,6 +722,89 @@ public class AccountSceneController implements Initializable {
         }
 
         toggleButtons();
+        transferEmpty = Account.getCurrentAccount().getTransfers().isEmpty();
+        seeTransferButton.setDisable(transferEmpty);
+        selectedTransfer = 0;
+    }
+
+    @FXML
+    public void payInstallement(){
+        HttpClient httpClient = HttpClientBuilder.create().build();
+        String postUrl = Main.api + "payInstallement?" +
+                "tokenStr=" + UserData.getUserData().getToken() +
+                "&account_id=" + Account.getCurrentAccount().getAccountID();
+        HttpPost request = new HttpPost(postUrl);
+        try {
+            HttpResponse response = httpClient.execute(request);
+
+            if (response.getStatusLine().getStatusCode() == 200) {
+                refreshAccountButton();
+            }
+            else logout();
+
+        } catch(Exception e) {
+            System.out.println("[Get Loan] " + e.getMessage());
+            logout();
+        } finally {
+            request.releaseConnection();
+        }
+    }
+
+    @FXML
+    public void toggleTakeLoanPane(){
+        tl_errorLabel.setVisible(false);
+        tl_errorLabel.setTextFill(Color.RED);
+        takeLoanPane.setVisible(!takeLoanPane.isVisible());
+        tl_takeLoanButton.setDisable(false);
+        toggleButtons();
+    }
+
+    @FXML
+    public void submitTakingLoan(){
+        tl_errorLabel.setVisible(false);
+        tl_errorLabel.setTextFill(Color.RED);
+
+        Double am;
+        try {
+            am = Double.parseDouble(tl_amountTextField.getText());
+        } catch(NumberFormatException e) {
+            tl_errorLabel.setText("Amount must be numeric value!");
+            tl_errorLabel.setVisible(true);
+            return;
+        }
+        if(am < 1000 || am > 100000){
+            tl_errorLabel.setText("Amount must be between 1.000 and 100.000 PLN!");
+            tl_errorLabel.setVisible(true);
+            return;
+        }
+
+        int len = (int) lengthSlider.getValue();
+
+        HttpClient httpClient = HttpClientBuilder.create().build();
+        String postUrl = Main.api + "takeLoan?" +
+                "tokenStr=" + UserData.getUserData().getToken() +
+                "&account_id=" + Account.getCurrentAccount().getAccountID() +
+                "&amount=" + df.format(am) +
+                "&loan_length=" + len;
+        HttpPost request = new HttpPost(postUrl);
+
+        try {
+            HttpResponse response = httpClient.execute(request);
+
+            if (response.getStatusLine().getStatusCode() == 200) {
+                tl_errorLabel.setTextFill(Color.GREEN);
+                tl_errorLabel.setText("Loan added as pending!");
+                tl_errorLabel.setVisible(true);
+                tl_takeLoanButton.setDisable(true);
+            }
+            else logout();
+
+        } catch(Exception e) {
+            System.out.println("[Take Loan] " + e.getMessage());
+            logout();
+        } finally {
+            request.releaseConnection();
+        }
     }
 
     @Override
@@ -641,6 +816,7 @@ public class AccountSceneController implements Initializable {
         newTransferPane.setVisible(false);
         exchangePane.setVisible(false);
         confirmTransferPane.setVisible(false);
+        takeLoanPane.setVisible(false);
 
         currencyChoiceBox.setItems(FXCollections.observableArrayList("PLN", "USD", "GBP", "EUR"));
         currencyChoiceBox.setValue("PLN");
@@ -652,6 +828,10 @@ public class AccountSceneController implements Initializable {
         fromChoiceBox.setItems(FXCollections.observableArrayList("PLN", "USD", "GBP", "EUR"));
         fromChoiceBox.setValue("PLN");
         fromChoiceBox.setOnAction(this::setChanges);
+
+        lengthSlider.valueProperty().addListener((observableValue, number, t1) -> {
+            sliderLabel.setText(Integer.toString((int) lengthSlider.getValue()));
+        });
 
         e_exchangeAmountTextField.setEditable(false);
     }

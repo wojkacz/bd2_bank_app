@@ -22,6 +22,7 @@ public class Account {
     Double balanceGBP;
     Double balanceUSD;
     List<Transfer> transfers = new ArrayList<>();
+    Loan loan = null;
 
     public Account() {
     }
@@ -90,8 +91,56 @@ public class Account {
         this.transfers = transfers;
     }
 
+    public Loan getLoan() {
+        return loan;
+    }
+
+    public void setLoan(Loan loan) {
+        this.loan = loan;
+    }
+
     public List<Transfer> getTransfers() {
         return transfers;
+    }
+
+    public static int getLoanInfo(){
+        HttpClient httpClient = HttpClientBuilder.create().build();
+        String getUrl = Main.api + "getMyLoanInfo?" +
+                "tokenStr=" + UserData.getUserData().getToken() +
+                "&account_id=" + Account.getCurrentAccount().getAccountID();
+        HttpGet request = new HttpGet(getUrl);
+        try {
+            HttpResponse response = httpClient.execute(request);
+            HttpEntity entity = response.getEntity();
+            String result = EntityUtils.toString(entity);
+
+            if (response.getStatusLine().getStatusCode() == 200) {
+                JSONObject obj = new JSONObject(result);
+
+                Double amount = obj.getJSONObject("my_loan_info").getDouble("amount");
+                Double toPayBackTotal = obj.getJSONObject("my_loan_info").getDouble("to_pay_back_total");
+                int length = obj.getJSONObject("my_loan_info").getInt("length");
+                int paidInstallements = obj.getJSONObject("my_loan_info").getInt("paid_installements");
+                LocalDate date = LocalDate.parse(obj.getJSONObject("my_loan_info").getString("date"));
+
+                Account.getCurrentAccount().setLoan(new Loan(amount, toPayBackTotal, length, paidInstallements, date));
+            }
+            else if (response.getStatusLine().getStatusCode() == 404) {
+                request.releaseConnection();
+                return 1;
+            }
+            else {
+                request.releaseConnection();
+                return 2;
+            }
+        } catch(Exception e) {
+            System.out.println("[Get Loan] " + e.getMessage());
+            request.releaseConnection();
+            return 2;
+        } finally {
+            request.releaseConnection();
+        }
+        return 0;
     }
 
     public static boolean getTransfersFromAPI(){
@@ -123,7 +172,10 @@ public class Account {
 
                 tr.sort(Comparator.comparing(Transfer::getDate).reversed());
             }
-            else return false;
+            else {
+                request.releaseConnection();
+                return false;
+            }
         } catch(Exception e) {
             System.out.println("[Get Transfers] " + e.getMessage());
             request.releaseConnection();

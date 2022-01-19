@@ -354,11 +354,6 @@ public class MainSceneController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        /*if(UserData.getUserData().isLogout()) {
-            UserData.getUserData().setLogout(false);
-            logout();
-        }*/
-
         welcomeLabel.setText("Hello, " + UserData.getUserData().getName() + " " + UserData.getUserData().getSurname() + "!");
         emailLabel.setText(UserData.getUserData().getLogin());
 

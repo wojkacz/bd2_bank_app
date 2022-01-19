@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import pl.wojkacz.Main;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class UserData {
@@ -64,6 +65,7 @@ public class UserData {
                         Double balUSD = obj.getJSONObject("account_" + i).getDouble("balance_usd");
                         accs.add(new Account(accName, accID, balPLN, balEUR, balGBP, balUSD));
                     }
+                    accs.sort(Comparator.comparing(Account::getAccountID));
                     break;
                 default:
                     return false;
@@ -75,6 +77,8 @@ public class UserData {
         } finally {
             request.releaseConnection();
         }
+
+
 
         if(Account.getCurrentAccount() != null){
             for(Account acc : UserData.getUserData().getAccounts()){

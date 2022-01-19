@@ -202,7 +202,10 @@ public class LoginController implements Initializable {
 
                     UserData.setUserData(new UserData(nameRes, surnameRes, loginRes, permissionRes, tokenRes));
 
-                    Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("../MainScene/MainScene.fxml")));
+                    Parent root;
+                    if(UserData.getUserData().getPermission() == 1)
+                        root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("../AdminScene/AdminScene.fxml")));
+                    else root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("../MainScene/MainScene.fxml")));
                     Scene scene = new Scene(root);
                     scene.getStylesheets().add("/styles/Styles.css");
 

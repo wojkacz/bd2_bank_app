@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="mainPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.wojkacz.AdminScene.AdminSceneController">
+   <children>
+      <Separator layoutX="297.0" layoutY="48.0" orientation="VERTICAL" prefHeight="227.0" prefWidth="9.0" />
+      <Label fx:id="helloLabel" layoutX="14.0" layoutY="14.0" text="Hello, Name Surname">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <Label fx:id="emailLabel" layoutX="14.0" layoutY="33.0" text="email" />
+      <Separator layoutX="14.0" layoutY="48.0" prefHeight="0.0" prefWidth="573.0" />
+      <Label fx:id="helloLabel1" layoutX="478.0" layoutY="25.0" text="Admin Panel">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <Label fx:id="helloLabel11" layoutX="217.0" layoutY="51.0" text="Transfers">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <Label fx:id="helloLabel111" layoutX="307.0" layoutY="51.0" text="Loans">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <Button fx:id="transferDetailsButton" layoutX="217.0" layoutY="78.0" mnemonicParsing="false" onAction="#checkTransferDetails" prefHeight="37.0" prefWidth="78.0" text="Details" />
+      <Button fx:id="loanDetailsButton" layoutX="307.0" layoutY="78.0" mnemonicParsing="false" onAction="#checkLoanDetails" prefHeight="37.0" prefWidth="78.0" text="Details" />
+      <Button fx:id="refreshButton" layoutX="216.0" layoutY="308.0" mnemonicParsing="false" onAction="#refreshData" prefHeight="37.0" prefWidth="168.0" text="Refresh" />
+      <Button fx:id="logButton" layoutX="14.0" layoutY="349.0" mnemonicParsing="false" onAction="#logoutButton" prefHeight="37.0" prefWidth="573.0" text="Logout" />
+      <ScrollPane layoutX="13.0" layoutY="52.0" prefHeight="293.0" prefWidth="199.0">
+         <content>
+            <VBox fx:id="transfersVBox" prefHeight="291.0" prefWidth="194.0" />
+         </content>
+      </ScrollPane>
+      <ScrollPane layoutX="388.0" layoutY="53.0" prefHeight="293.0" prefWidth="199.0">
+         <content>
+            <VBox fx:id="loansVBox" prefHeight="291.0" prefWidth="194.0" />
+         </content>
+      </ScrollPane>
+      <Button fx:id="currenciesButton" layoutX="216.0" layoutY="265.0" mnemonicParsing="false" onAction="#toggleCurrenciesPane" prefHeight="37.0" prefWidth="168.0" text="Currencies" />
+      <AnchorPane fx:id="transferPane" layoutX="117.0" layoutY="78.0" prefHeight="200.0" prefWidth="366.0" style="-fx-background-color: #FFFFFF; -fx-border-color: #000000;" visible="false">
+         <children>
+            <Label layoutX="14.0" layoutY="6.0" text="Transfer Details">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+            <Button fx:id="t_declineButton" layoutX="14.0" layoutY="149.0" mnemonicParsing="false" onAction="#declineSelectedTransfer" prefHeight="37.0" prefWidth="108.0" text="Decline" />
+            <Button layoutX="129.0" layoutY="149.0" mnemonicParsing="false" onAction="#checkTransferDetails" prefHeight="37.0" prefWidth="108.0" text="Exit" />
+            <Button fx:id="t_acceptButton" layoutX="244.0" layoutY="149.0" mnemonicParsing="false" onAction="#acceptSelectedTransfer" prefHeight="37.0" prefWidth="108.0" text="Accept" />
+            <Separator layoutX="14.0" layoutY="32.0" prefHeight="3.0" prefWidth="339.0" />
+            <Label layoutX="14.0" layoutY="35.0" text="Sender Account ID:">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Label layoutX="14.0" layoutY="52.0" text="Receiver Account ID:">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Label layoutX="14.0" layoutY="69.0" text="Amount:">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Label layoutX="14.0" layoutY="86.0" text="Currency:">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Label layoutX="14.0" layoutY="103.0" text="Date:">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Label fx:id="t_errorLabel" alignment="CENTER" layoutX="13.0" layoutY="132.0" prefHeight="17.0" prefWidth="339.0" text="ERROR LABEL" textFill="RED" visible="false">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Label fx:id="t_senderID" layoutX="126.0" layoutY="35.0" text="0">
+               <font>
+                  <Font name="System Italic" size="12.0" />
+               </font>
+            </Label>
+            <Label fx:id="t_receiverID" layoutX="133.0" layoutY="52.0" text="0">
+               <font>
+                  <Font name="System Italic" size="12.0" />
+               </font>
+            </Label>
+            <Label fx:id="t_amount" layoutX="65.0" layoutY="69.0" text="0">
+               <font>
+                  <Font name="System Italic" size="12.0" />
+               </font>
+            </Label>
+            <Label fx:id="t_currency" layoutX="71.0" layoutY="87.0" text="PLN">
+               <font>
+                  <Font name="System Italic" size="12.0" />
+               </font>
+            </Label>
+            <Label fx:id="t_date" layoutX="47.0" layoutY="103.0" text="0">
+               <font>
+                  <Font name="System Italic" size="12.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
+      <AnchorPane fx:id="loanPane" layoutX="117.0" layoutY="78.0" prefHeight="200.0" prefWidth="366.0" style="-fx-background-color: #FFFFFF; -fx-border-color: #000000;" visible="false">
+         <children>
+            <Label layoutX="14.0" layoutY="6.0" text="Loan Details">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+            <Button fx:id="l_declineButton" layoutX="14.0" layoutY="149.0" mnemonicParsing="false" onAction="#declineSelectedLoan" prefHeight="37.0" prefWidth="108.0" text="Decline" />
+            <Button layoutX="129.0" layoutY="149.0" mnemonicParsing="false" onAction="#checkLoanDetails" prefHeight="37.0" prefWidth="108.0" text="Exit" />
+            <Separator layoutX="14.0" layoutY="32.0" prefHeight="3.0" prefWidth="339.0" />
+            <Button fx:id="l_acceptButton" layoutX="244.0" layoutY="149.0" mnemonicParsing="false" onAction="#acceptSelectedLoan" prefHeight="37.0" prefWidth="108.0" text="Accept" />
+            <Label layoutX="14.0" layoutY="35.0" text="User ID:">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Label layoutX="14.0" layoutY="52.0" text="Account ID:">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Label layoutX="14.0" layoutY="69.0" text="Amount:">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Label layoutX="14.0" layoutY="86.0" text="Installement:">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Label layoutX="14.0" layoutY="103.0" text="Length:">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Label layoutX="14.0" layoutY="120.0" text="Date: ">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Label fx:id="l_userIDLabel" layoutX="63.0" layoutY="35.0" text="0">
+               <font>
+                  <Font name="System Italic" size="12.0" />
+               </font>
+            </Label>
+            <Label fx:id="l_accountIDLabel" layoutX="85.0" layoutY="52.0" text="0">
+               <font>
+                  <Font name="System Italic" size="12.0" />
+               </font>
+            </Label>
+            <Label fx:id="l_amountLabel" layoutX="67.0" layoutY="69.0" text="0">
+               <font>
+                  <Font name="System Italic" size="12.0" />
+               </font>
+            </Label>
+            <Label fx:id="l_installementLabel" layoutX="91.0" layoutY="87.0" text="PLN">
+               <font>
+                  <Font name="System Italic" size="12.0" />
+               </font>
+            </Label>
+            <Label fx:id="l_lengthLabel" layoutX="60.0" layoutY="103.0" text="0">
+               <font>
+                  <Font name="System Italic" size="12.0" />
+               </font>
+            </Label>
+            <Label fx:id="l_dateLabel" layoutX="48.0" layoutY="120.0" text="0">
+               <font>
+                  <Font name="System Italic" size="12.0" />
+               </font>
+            </Label>
+            <Label fx:id="l_errorLabel" alignment="CENTER" layoutX="13.0" layoutY="133.0" prefHeight="17.0" prefWidth="339.0" text="ERROR LABEL" textFill="RED" visible="false">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
+      <AnchorPane fx:id="currenciesPane" layoutX="112.0" layoutY="78.0" prefHeight="200.0" prefWidth="366.0" style="-fx-background-color: #FFFFFF; -fx-border-color: #000000;">
+         <children>
+            <Label layoutX="14.0" layoutY="6.0" text="Currencies">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
+            <Button layoutX="14.0" layoutY="149.0" mnemonicParsing="false" onAction="#getCurrenciesFromAPI" prefHeight="37.0" prefWidth="108.0" text="Get From API" />
+            <Button layoutX="129.0" layoutY="149.0" mnemonicParsing="false" onAction="#toggleCurrenciesPane" prefHeight="37.0" prefWidth="108.0" text="Exit" />
+            <Separator layoutX="14.0" layoutY="32.0" prefHeight="3.0" prefWidth="339.0" />
+            <Button layoutX="244.0" layoutY="149.0" mnemonicParsing="false" onAction="#updateCurrencies" prefHeight="37.0" prefWidth="108.0" text="Update" />
+            <Label fx:id="c_errorLabel" alignment="CENTER" layoutX="13.0" layoutY="133.0" prefHeight="17.0" prefWidth="339.0" text="ERROR LABEL" textFill="RED" visible="false">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <TextField fx:id="c_eurBuy" layoutX="14.0" layoutY="106.0" prefHeight="25.0" prefWidth="78.0" />
+            <TextField fx:id="c_eurSell" layoutX="92.0" layoutY="106.0" prefHeight="25.0" prefWidth="78.0" />
+            <Label layoutX="14.0" layoutY="90.0" text="EUR        BUY | SELL">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <TextField fx:id="c_gbpBuy" layoutX="197.0" layoutY="107.0" prefHeight="25.0" prefWidth="78.0" />
+            <TextField fx:id="c_gbpSell" layoutX="275.0" layoutY="107.0" prefHeight="25.0" prefWidth="78.0" />
+            <Label layoutX="197.0" layoutY="91.0" text="GBP        BUY | SELL">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <TextField fx:id="c_usdBuy" layoutX="197.0" layoutY="54.0" prefHeight="25.0" prefWidth="78.0" />
+            <TextField fx:id="c_usdSell" layoutX="275.0" layoutY="54.0" prefHeight="25.0" prefWidth="78.0" />
+            <Label layoutX="197.0" layoutY="38.0" text="USD        BUY | SELL">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Button layoutX="14.0" layoutY="43.0" mnemonicParsing="false" onAction="#refreshExchangeRate" prefHeight="37.0" prefWidth="153.0" text="Refresh" />
+         </children>
+      </AnchorPane>
+   </children>
+</AnchorPane>
