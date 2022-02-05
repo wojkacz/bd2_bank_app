@@ -47,23 +47,16 @@ public class LoginController implements Initializable {
     @FXML
     private Label e_errorLabel;
 
-    Runnable checkConnection = new Runnable() {
-        @Override
-        public void run() {
-            while (true) {
-                try {
-                    Thread.sleep(10 * 1000);
-                    if(checkConnection()) {
-                        Platform.runLater(new Runnable() {
-                            public void run() {
-                                setToConnected();
-                            }
-                        });
-                        break;
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+    Runnable checkConnection = () -> {
+        while (true) {
+            try {
+                Thread.sleep(10 * 1000);
+                if(checkConnection()) {
+                    Platform.runLater(() -> setToConnected());
+                    break;
                 }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
     };
